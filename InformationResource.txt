@@ -1,0 +1,38 @@
+============================================================================================
+To fetch data from three tables
+
+String sql = "SELECT TRACKER_ID, FIRST_NAME, LAST_NAME, MOBILE_NO, RESPONSE, RESPONSE_TS, "
+				+ "EMAIL_ID, LISTAGG(QUESTION_NO, '|') WITHIN GROUP (ORDER BY QUESTION_NO) QUESTION_NO, "
+				+ "LISTAGG(ANSWER_TEXT, '|') WITHIN GROUP (ORDER BY QUESTION_NO) ANSWER_TEXT FROM  "
+				//Up to here are select cols
+				+ "(select XX.*, YY.QUESTION_NO, YY.ANSWER_TEXT FROM (SELECT EAT.TRACKER_ID, ACD.FIRST_NAME, "
+				+ "ACD.LAST_NAME, ACD.MOBILE_NO, EAT.RESPONSE, TO_CHAR(RESPONSE_TS, 'MM/DD/YYYY HH:MI:SS AM') "
+				+ "RESPONSE_TS, EAT.EMAIL_ID FROM NEW_EMAIL_AUDIT_TRAIL EAT, MORPHO_ACCOUNT_DTL ACD WHERE "
+				+ "ACD.TRACKER_ID = EAT.TRACKER_ID AND EAT.INSERTED_ON BETWEEN (to_date(?,'yyyy-MM-DD hh24:mi:ss')) AND (to_date(?,'yyyy-MM-DD hh24:mi:ss'))) XX,MORPHO_TB_QUES_ANS_DTL YY "
+				+ "WHERE XX.TRACKER_ID=YY.TRACKING_NO and YY.QUESTION_NO IN (14, 53)) GROUP BY TRACKER_ID, "
+				+ "FIRST_NAME, LAST_NAME, MOBILE_NO, RESPONSE, RESPONSE_TS, EMAIL_ID ORDER BY EMAIL_ID";
+===========================================================================================
+To read the from an input stream and document builder
+		
+PrintWriter localPrintWriter = null;
+				DataInputStream localDataInputStream = null;
+				localPrintWriter = new PrintWriter(clientSocket.getOutputStream(), true);
+				localPrintWriter.println(requestBody.trim());
+				localDataInputStream = new DataInputStream(clientSocket.getInputStream());
+				String response = "";
+				while ((response = localDataInputStream.readLine()) != null)
+				   {
+					sb.append(response.trim());
+				   }
+			     LOGGER.info("Response From Icore Account Details:  "+sb.toString());
+				 String custName="";
+			     if(sb!=null && !sb.toString().equals(""))
+			     { 
+			    	 		DocumentBuilder db;
+							db = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+							InputStream respIs = new ByteArrayInputStream(sb.toString().getBytes());
+							Document doc = db.parse(respIs);
+							NodeList nodes = doc.getElementsByTagName("PvtDataField125");
+							Element eElement = (Element) nodes.item(0);
+							String custData = eElement.getTextContent();
+				}
