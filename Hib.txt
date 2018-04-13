@@ -1,0 +1,207 @@
+ @Version
+ private int ver;
+=============================================================================
+ @EmbeddedId			for primary key
+ private ProjPrgmrId id;
+=============================================================================
+
+ @Id
+	@GenericGenerator(name="gen1",strategy="increment")
+	@GeneratedValue(generator="gen1")
+	private int pid;
+=============================================================================
+@Entity
+@Table(name="student_Tab")
+@FilterDef(name="STUDS_BY_RANGE",
+           parameters={@ParamDef(name="min",type="int"),
+                       @ParamDef(name="max",type="int")
+                      }
+           )
+@Filter(name="STUDS_BY_RANGE",condition="stno>=:min and stno<=:max")
+public class Student{}
+Test
+==============
+		filter=ses.enableFilter("STUDS_BY_RANGE");
+		filter.setParameter("min",start);
+		filter.setParameter("max",end);
+		query=ses.createQuery(GET_STUDENTS_BY_RANGE);
+=============================================================================
+@Embeddable
+public class JobType {}
+
+@Embedded
+private JobType pjob;
+===========================TPC==================================================
+@Entity
+@Table(name="payment1")
+@Inheritance(strategy=InheritanceType.SINGLE_TABLE)
+@DiscriminatorColumn(name="paytype",discriminatorType=DiscriminatorType.STRING,length=10)
+public abstract class Payment {}
+==================
+@Entity
+@DiscriminatorValue("CHEQUE")
+public class ChequePayment extends Payment {}
+==================
+@Entity
+@DiscriminatorValue("CREDIT")
+public class CreditCardPayment extends Payment {}
+==============================TPSC===============================================
+@Entity
+@Table(name="payment2")
+@Inheritance(strategy=InheritanceType.JOINED)
+public abstract class Payment {}
+================================
+@Entity
+@Table(name="credit_Payment2")
+@PrimaryKeyJoinColumn(name="payment_id")
+public class CreditCardPayment extends Payment {}
+================================
+
+@Entity
+@Table(name="cheque_payment2")
+@PrimaryKeyJoinColumn(name="payment_id")
+public class ChequePayment extends Payment {}
+==============================TPCC===============================================
+@Entity
+@Inheritance(strategy=InheritanceType.TABLE_PER_CLASS)
+public abstract class Payment {}
+=================================
+@Entity
+@Table(name="credit_Payment3")
+public class CreditCardPayment extends Payment {}
+=================================
+@Entity
+@Table(name="cheque_payment3")
+public class ChequePayment extends Payment {}
+==============================OTM====set===========================================
+@Id
+@Column(name = "user_id")
+private int userId;
+@OneToMany(targetEntity = PhoneNumber.class, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+@Fetch(FetchMode.SELECT)
+@JoinColumn(name = "unid", referencedColumnName = "user_id")
+private Set<PhoneNumber> phones;
+
+==============================OTM====List===========================================
+@OneToMany(targetEntity = PhoneNumber.class, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+@Fetch(FetchMode.SELECT)
+@JoinColumn(name = "unid", referencedColumnName = "user_id")
+@OrderColumn(name="lst_indx")
+private List<PhoneNumber> phones;
+==============================OTM====Map===========================================
+@OneToMany(targetEntity = PhoneNumber.class, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+@JoinColumn(name = "unid",referencedColumnName = "user_id")
+@Fetch(FetchMode.SELECT)
+@MapKeyColumn(name="map_indx")
+private Map<String,PhoneNumber> phones;
+==============================OTM====Bi===========================================
+@OneToMany(targetEntity = PhoneNumber.class,cascade = CascadeType.ALL,mappedBy="user")
+@Fetch(FetchMode.SELECT)
+private Set<PhoneNumber> phones;
+====================================
+@ManyToOne(targetEntity=User.class,cascade=CascadeType.ALL)
+@JoinColumn(name="unid",referencedColumnName="user_id")
+private User user;
+==============================MTM=================================================
+
+@ManyToMany(targetEntity = Programmer.class, cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "projects")
+private Set<Programmer> programmers = new HashSet<Programmer>();
+==============================
+@ManyToMany(targetEntity = Project.class, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+@JoinTable(name = "programmers_projects", joinColumns = @JoinColumn(name = "programmer_id", referencedColumnName = "pid") , inverseJoinColumns = @JoinColumn(name = "project_id", referencedColumnName = "proid") )
+private List<Project> projects = new ArrayList<Project>();
+
+==============================OTO==============Bi===================================
+public class Student {
+	private int sid;
+	@OneToOne(targetEntity=LibraryMembership.class,cascade=CascadeType.ALL)
+	 @PrimaryKeyJoinColumn(name="lid",referencedColumnName="sid")
+	 private LibraryMembership libraryDetails;
+}
+public class LibraryMembership {
+ @OneToOne(targetEntity=Student.class,cascade=CascadeType.ALL,mappedBy="libraryDetails")
+	 private  Student studentDetails;
+}
+==============================@NamedQuery===================================================
+
+@NamedQueries(value={@NamedQuery(name="GET_STUDS_BY_RANGE",
+                                query="from Student where sno>=:min and sno<=:max"),
+                                
+		             @NamedQuery(name="DELETE_STUDS_BY_ADDRS",
+		                         query="delete from Student where address=:addrs") 
+                    }
+             )
+test
+=======
+query1=ses.getNamedQuery("GET_STUDS_BY_RANGE");
+		
+		query1.setInteger("min",100);
+		query1.setInteger("max",200);
+		
+		list=query1.list();
+==============================@NamedNativeQuery===================================================
+		
+@NamedNativeQueries(value={@NamedNativeQuery(name="GET_ALL_STUDENTS",
+                                             query="SELECT * FROM STUDENT_TAB",
+                                             resultClass=Student.class),
+                           @NamedNativeQuery(name="GET_NAME_BY_CITY",
+                        		             query="SELECT STNAME FROM STUDENT_TAB WHERE STADD=:city")
+                      })
+test
+=======					  
+Query query1=ses.getNamedQuery("GET_ALL_STUDENTS");
+		List<Student> list=query1.list();
+Query query2=ses.getNamedQuery("GET_NAME_BY_CITY");
+		query2.setString("city","hyd");
+
+
+
+
+
+
+==============================================================================================================
+session.get()/session.load()
+=============================
+session.load() method, will always return a “proxy” object.It will hit the database only when we try to retrieve the other properties of the object.
+When you call session.get() method, it will hit the database immediately and returns the original object.
+
+session.save()/session.persist()
+================================
+If our generator class is assigned, then there is no difference between save() and persist() methods. 
+In case of other than assigned generator class, save() method can return that primary key id value which is generated by hibernate 
+long s = session.save(k);
+In this same case, persist() will never give any value back to the client.
+
+session.update()/session.merge()
+================================
+When we load the object of same identifier in two different sessions and try to update first object (which is detached) in the second session ,
+Hibernate will throw an exception.So, to avoid such exception, merge() method comes into the picture.
+
+Session session1 = factory.openSession();
+Student s1 = null;
+Object o = session1.get(Student.class, new Integer(101));
+s1 = (Student)o;
+session1.close();
+ 
+s1.setMarks(97);
+ 
+Session session2 = factory.openSession();
+Student s2 = null;
+Object o1 = session2.get(Student.class, new Integer(101));
+s2 = (Student)o1;
+Transaction tx=session2.beginTransaction();s
+ 
+session2.merge(s1);//session2.update(s1) will throw an error
+
+===============================================================================
+public boolean equals(Object obj) {
+      if (obj == null) return false;
+      if (!this.getClass().equals(obj.getClass())) return false;
+
+      Certificate obj2 = (Certificate)obj;
+      if((this.id == obj2.getId()) && (this.name.equals(obj2.getName()))) {
+         return true;
+      }
+      return false;
+   }
+		
