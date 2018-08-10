@@ -36,3 +36,392 @@ PrintWriter localPrintWriter = null;
 							Element eElement = (Element) nodes.item(0);
 							String custData = eElement.getTextContent();
 				}
+==============================================================================================				
+Rules for Method Overriding		
+
+		
+The argument list should be exactly the same as that of the overridden method.
+
+The return type should be the same or a subtype of the return type declared in the original overridden method in the superclass.
+
+The access level cannot be more restrictive than the overridden method's access level. For example: If the superclass method 
+is declared public then the overridding method in the sub class cannot be either private or protected.
+
+Instance methods can be overridden only if they are inherited by the subclass.
+
+A method declared final cannot be overridden.
+
+A method declared static cannot be overridden but can be re-declared.
+
+If a method cannot be inherited, then it cannot be overridden.
+
+A subclass within the same package as the instance's superclass can override any superclass method that is not declared private or final.
+
+A subclass in a different package can only override the non-final methods declared public or protected.
+
+An overriding method can throw any uncheck exceptions, regardless of whether the overridden method throws exceptions or not. However, 
+the overriding method should not throw checked exceptions that are new or broader than the ones declared by the overridden method. 
+The overriding method can throw narrower or fewer exceptions than the overridden method.
+
+Constructors cannot be overridden.				
+======================================================================
+
+Polymorphism is the ability of an object to take on many forms. The most common use of polymorphism in OOP occurs when a parent class 
+reference is used to refer to a child class object.
+			
+hibernate.dialect:  This property makes Hibernate generate the appropriate SQL for the chosen database.	
+					org.hibernate.dialect.Oracle10gDialect	
+
+===========================Table Per Class==================================================
+@Entity
+@Table(name="payment1")
+@Inheritance(strategy=InheritanceType.SINGLE_TABLE)
+@DiscriminatorColumn(name="paytype",discriminatorType=DiscriminatorType.STRING,length=10)
+public abstract class Payment {}
+==================
+@Entity
+@DiscriminatorValue("CHEQUE")
+public class ChequePayment extends Payment {}
+==================
+@Entity
+@DiscriminatorValue("CREDIT")
+public class CreditCardPayment extends Payment {}
+==============================================================================================================
+@Entity
+@Inheritance(strategy=InheritanceType.TABLE_PER_CLASS)
+public abstract class Payment {}
+=================================
+@Entity
+@Table(name="credit_Payment3")
+public class CreditCardPayment extends Payment {}
+
+
+==============================Table per sub class===============================================
+@Entity
+@Table(name="payment2")
+@Inheritance(strategy=InheritanceType.JOINED)
+public abstract class Payment {}
+================================
+@Entity
+@Table(name="credit_Payment2")
+@PrimaryKeyJoinColumn(name="payment_id")
+public class CreditCardPayment extends Payment {}
+================================
+
+@Entity
+@Table(name="cheque_payment2")
+@PrimaryKeyJoinColumn(name="payment_id")
+public class ChequePayment extends Payment {}
+
+=============================HTTP URL CONNECTION===================================
+
+		StringBuffer response = null;
+		HttpURLConnection httpConnection = null;
+		try {
+			COM_GEN_Parameter com_GEN_Parameter = COM_GEN_Parameter.getParamInstance();
+
+			String pqplTimeout = com_GEN_Parameter.getParamMap().get("PQ_PL_CONN_TIMEOUT");
+			String pqplConnTimeout = pqplTimeout.split("~")[0];
+			String pqplReadTimeout = pqplTimeout.split("~")[1];
+			URL urlConn = new URL(url);
+			httpConnection = (HttpURLConnection) urlConn.openConnection();
+			httpConnection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+			httpConnection.setRequestMethod("POST");
+			httpConnection.setDoOutput(true);
+			httpConnection.setDoInput(true);
+			httpConnection.setConnectTimeout(Integer.parseInt(pqplConnTimeout));
+			httpConnection.setReadTimeout(Integer.parseInt(pqplReadTimeout));
+
+			OutputStreamWriter stream = new OutputStreamWriter(httpConnection.getOutputStream());
+			stream.write(requestBody);
+			stream.flush();
+			stream.close();
+
+			BufferedReader in = new BufferedReader(new InputStreamReader(httpConnection.getInputStream()));
+			String inputLine;
+			response = new StringBuffer();
+
+			while ((inputLine = in.readLine()) != null) {
+				response.append(inputLine);
+			}
+			in.close();
+
+		} 
+		catch(Exception e){
+			log.error("Exception in httpPostCall for PqPlOffers: "+e.getMessage());
+			
+		}
+		finally {
+			if (httpConnection != null) {
+				httpConnection.disconnect();
+			}
+		}
+		return response.toString();
+========================================================================================================
+
+The Just-In-Time (JIT) compiler is the compiler that converts the byte-code to machine code. It compiles byte-code once and the compiled 
+machine code is re-used again and again, to speed up execution. Early Java compilers compiled the byte-code to machine code each time it 
+was used, but more modern compilers cache this machine code for reuse on the machine. Even then, java's JIT compiling was still faster than 
+an "interpreter-language", where code is compiled from high level language, instead of from byte-code each time it was used.
+
+The standard JIT compiler runs on demand. When a method is called repeatedly, the JIT compiler analyzes the bytecode and produces highly 
+efficient machine code, which runs very fast. The JIT compiler is smart enough to recognize when the code has already been compiled, so as 
+the application runs, compilation happens only as needed. As Java applications run, they tend to become faster and faster, because the JIT 
+can perform runtime profiling and optimization to the code to meet the execution environment. Methods or code blocks which do not run often 
+receive less optimization; those which run often (so called hotspots) receive more profiling and optimization.	
+
+===================================================================================================
+
+String is immutable in Java. An immutable class is simply a class whose instances cannot be modified. All information in an instance is initialized when the instance is created and the information can not be modified. There are many advantages of immutable classes. This article summarizes why String is designed to be immutable. This post illustrate the immutability concept in the perspective of memory, synchronization and data structures.
+
+
+
+1. Requirement of String Pool
+
+String pool (String intern pool) is a special storage area in Method Area. When a string is created and if the string already exists in the pool, the reference of the existing string will be returned, instead of creating a new object.
+
+
+The following code will create only one string object in the heap.
+
+
+String string1 = "abcd";
+String string2 = "abcd";
+Here is how it looks:
+java-string-pool
+
+If a string is mutable, changing the string with one reference will lead to the wrong value for the other references.
+
+2. Caching Hashcode
+
+The hashcode of a string is frequently used in Java. For example, in a HashMap or HashSet. Being immutable guarantees that hashcode will always be the same so that it can be cashed without worrying about the changes.That means, there is no need to calculate hashcode every time it is used. This is more efficient.
+
+In String class, it has the following code:
+
+private int hash;//this is used to cache hash code.
+3. Facilitating the Use of Other Objects
+
+To make this concrete, consider the following program:
+
+HashSet<String> set = new HashSet<String>();
+set.add(new String("a"));
+set.add(new String("b"));
+set.add(new String("c"));
+ 
+for(String a: set)
+	a.value = "a";
+In this example, if String is mutable, its value can be changed which would violate the design of set (set contains unduplicated elements). Of curse, the example above is just for demonstration purpose and there is no value field in a real string class.
+
+4. Security
+
+String is widely used as a parameter for many java classes, e.g. network connection, opening files, etc. Were String not immutable, a connection or file would be changed and this can lead to a serious security threat. The method thought it was connecting to one machine, but was not. Mutable strings could cause a security problem in Reflection too, as the parameters are strings.
+
+Here is a code example:
+
+boolean connect(string s){
+    if (!isSecure(s)) { 
+throw new SecurityException(); 
+}
+    //here will cause problem, if s is changed before this by using other references.    
+    causeProblem(s);
+}
+5. Immutable objects are naturally thread-safe
+
+Because immutable objects can not be changed, they can be shared among multiple threads freely. This eliminates the requirements of doing synchronization.
+
+In summary, String is designed to be immutable for efficiency and security reasons. This is also the reason why immutable classes are preferred in many cases in general.
+=========================================================================
+
+An interface is similar to a class in the following ways −
+
+An interface can contain any number of methods.
+
+An interface is written in a file with a .java extension, with the name of the interface matching the name of the file.
+
+The byte code of an interface appears in a .class file.
+
+Interfaces appear in packages, and their corresponding bytecode file must be in a directory structure that matches the package name.
+
+However, an interface is different from a class in several ways, including −
+
+You cannot instantiate an interface.
+
+An interface does not contain any constructors.
+
+All of the methods in an interface are abstract.
+
+An interface cannot contain instance fields. The only fields that can appear in an interface must be declared both static and final.
+
+An interface is not extended by a class; it is implemented by a class.
+
+An interface can extend multiple interfaces.
+=======================================================================
+
+Tagging Interfaces
+The most common use of extending interfaces occurs when the parent interface does not contain any methods. For example, the MouseListener interface in the java.awt.event package extended java.util.EventListener, which is defined as −
+
+Example
+package java.util;
+public interface EventListener
+{}
+An interface with no methods in it is referred to as a tagging interface. There are two basic design purposes of tagging interfaces −
+
+Creates a common parent − As with the EventListener interface, which is extended by dozens of other interfaces in the Java API, you can use a tagging interface to create a common parent among a group of interfaces. 
+For example, when an interface extends EventListener, the JVM knows that this particular interface is going to be used in an event delegation scenario.
+
+Adds a data type to a class − This situation is where the term, tagging comes from. A class that implements a tagging interface does not need 
+to define any methods (since the interface does not have any), but the class becomes an interface type through polymorphism.
+
+=======================================================================
+
+Packages are used in Java in order to prevent naming conflicts, to control access, to make searching/locating and usage of classes, interfaces, enumerations and annotations easier, etc.
+
+A Package can be defined as a grouping of related types (classes, interfaces, enumerations and annotations ) providing access protection and namespace management.
+
+Some of the existing packages in Java are −
+
+java.lang − bundles the fundamental classes
+===========================================================
+The Enumeration interface defines the methods by which you can enumerate (obtain one at a time) the elements in a collection of objects.
+
+This legacy interface has been superceded by Iterator. Although not deprecated, Enumeration is considered obsolete for new code. 
+However, it is used by several methods defined by the legacy classes such as Vector and Properties, is used by several other API classes, 
+and is currently in widespread use in application code.
+
+The methods declared by Enumeration are summarized in the following table 
+import java.util.Vector;
+import java.util.Enumeration;
+
+public class EnumerationTester {
+
+   public static void main(String args[]) {
+      Enumeration days;
+      Vector dayNames = new Vector();
+      
+      dayNames.add("Sunday");
+      dayNames.add("Monday");
+      dayNames.add("Tuesday");
+      dayNames.add("Wednesday");
+      dayNames.add("Thursday");
+      dayNames.add("Friday");
+      dayNames.add("Saturday");
+      days = dayNames.elements();
+      
+      while (days.hasMoreElements()) {
+         System.out.println(days.nextElement()); 
+      }
+   }
+}
+
+java.io − classes for input , output functions are bundled in this package
+=============================================================================================
+Prior to Java 2, Java provided ad hoc classes such as Dictionary, Vector, Stack, and Properties to store and manipulate groups of objects. 
+Although these classes were quite useful, they lacked a central, unifying theme. Thus, the way that you used Vector was different from the way that you used Properties.
+
+The collections framework was designed to meet several goals, such as −
+
+The framework had to be high-performance. The implementations for the fundamental collections (dynamic arrays, linked lists, trees, and 
+hashtables) were to be highly efficient.
+
+The framework had to allow different types of collections to work in a similar manner and with a high degree of interoperability.
+
+The framework had to extend and/or adapt a collection easily.
+===================================================================
+The Volatile Modifier
+The volatile modifier is used to let the JVM know that a thread accessing the variable must always merge its own private copy of the variable 
+with the master copy in the memory.
+
+Accessing a volatile variable synchronizes all the cached copied of the variables in the main memory. Volatile can only be applied to instance 
+variables, which are of type object or private. A volatile object reference can be null.
+=========================================================================
+<bean id="sessionFactory"
+		class="org.springframework.orm.hibernate4.LocalSessionFactoryBean">
+		<property name="dataSource" ref="dataSource" />
+		<property name="packagesToScan">
+			<list>
+				<value>com.ekyc.model</value>
+				
+			</list>
+		</property>
+		<property name="hibernateProperties">
+			<props>
+				<prop key="hibernate.dialect">${hibernate.dialect}</prop>
+				<prop key="hibernate.show_sql">${hibernate.show_sql}</prop>
+				<prop key="hibernate.format_sql">${hibernate.format_sql}</prop>
+			</props>
+		</property>
+	</bean>
+<task:scheduled-tasks scheduler="taskScheduler">
+		<task:scheduled ref="imageProcessScheduler" method="pickTrackerIdForProcessing"
+			fixed-delay="10000" initial-delay="10000" />
+	</task:scheduled-tasks>	
+<bean id="taskExecutor"
+		class="org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor">
+		<property name="corePoolSize" value="1" />
+		<property name="maxPoolSize" value="3" />
+		<property name="queueCapacity" value="5" />
+		<property name="WaitForTasksToCompleteOnShutdown" value="false" />
+	</bean>	
+	<bean name="newBeanFactory" class="com.neo.comp.NewBeanFactoryImpl">
+		<lookup-method bean="neoCaseProcThread" name="getNewBean" />
+	</bean>
+	
+	public UserLogin getDetails(String userId) {
+		Criteria criteria = getSession().createCriteria(UserLogin.class);
+		criteria.add(Restrictions.eq("userID", userId));
+		@SuppressWarnings("unchecked")
+		List<UserLogin> getDetails = (List<UserLogin>) criteria.list();
+		LOGGER.info("getDetails getDetails.size(): " + getDetails.size());
+		if (getDetails.size() > 0) {
+			return getDetails.get(0);
+		}
+		return null;
+	}
+	public Date getLastAccessedTime(String userID) {
+		LOGGER.info("getLastAccessedTime userID: " + userID);
+		Criteria criteria = getSession().createCriteria(UserLogin.class)
+				.setProjection(Projections.property("lastAccessedTime").as("lastAccessedTime"));
+		criteria.add(Restrictions.eq("userID", userID));
+
+		@SuppressWarnings("unchecked")
+		ArrayList<Date> dateList = (ArrayList<Date>) criteria.list();
+		LOGGER.info("getLastAccessedTime dateList.size(): " + dateList.size());
+		if (dateList != null && dateList.size() > 0) {
+			return dateList.get(0);
+		}
+		return null;
+	}
+	
+Though many Hibernate users choose to write the XML by hand, but a number of tools exist to generate the mapping document. These include 
+XDoclet, Middlegen and AndroMDA for the advanced Hibernate users.
+<hibernate-mapping>
+   <class name = "Employee" table = "EMPLOYEE">
+      
+      <meta attribute = "class-description">
+         This class contains the employee detail. 
+      </meta>
+      
+      <id name = "id" type = "int" column = "id">
+         <generator class="native"/>
+      </id>
+      
+      <property name = "firstName" column = "first_name" type = "string"/>
+      <property name = "lastName" column = "last_name" type = "string"/>
+      <property name = "salary" column = "salary" type = "int"/>
+      
+   </class>
+</hibernate-mapping>
+
+Criterion salary = Restrictions.gt("salary", 2000);
+Criterion name = Restrictions.ilike("firstNname","zara%");
+
+// To get records matching with OR conditions
+LogicalExpression orExp = Restrictions.or(salary, name);
+cr.add( orExp );
+
+// To get records matching with AND conditions
+LogicalExpression andExp = Restrictions.and(salary, name);
+cr.add( andExp );
+
+rs = jdbcTemplate.queryForRowSet(CaseStatusQuery);
+List<Map<String, Object>> trackList = namedJdbcTmplate.queryForList(sql, paramMap);
+count=namedJdbcTmplate.update(sql,parameters);  // for insert,update
