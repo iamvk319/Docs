@@ -1,0 +1,61 @@
+Modules in the application
+
+Tabs available in Home page.
+
+DashBoard:
+Upon Successful login for the first time users, the user will be asked to enter a Sol Id pertaining to the location where he is appointed to source the accounts using the application.
+Leads:
+When the user enters a lead Id generated through the application/iMobile and clicks on search icon, it fetches the details that are entered by the customer before the lead was generated, and fetched details
+can be used to further process the account creation through the IcaptureNext application.
+OPEN NEW ACCOUNT- NO LEAD:
+When the user clicks on this option, he will be navigated to a page where the options such as NRI Saving,Saving account,Youngstar, Salary Account are available among which the user has to select one option based on the customer's profession.
+Upon selection of an option from this, there will be a pop up displayed to select a Special purpose based account which is meant to provide the customers a few
+special benefits like Remittance, Loan Payment, Insurance Protection etc., and this is up to customer to go for it or not and the user will be ultimately navigated to
+Product Profiler Page. 
+
+If the user clicks on Yes, then the Product Profiler Page will have a few specific questions such as customer occupation and existing loans.
+Based on the user's input for these questions, on clicking the NEXT button, there will be a pre populated special accounts section among which the customer can opt for one account in which there will be 
+a few product types such as TITANIUM, GOLD,SILVER etc., for each account opted. User can click either on NOT INTERESTED (if the customer is not willing to go for
+this type of account) or on the product type if the customer wants to go for it.
+
+If the user clicks on No, then the Product Profiler Page will have many questions and based on the customer's income and age, the criterion of the account will be decided and will be displayed with a brief description of the Basic Savings account
+in the Basic details page on clicking the Save and Suggest a Product button at the bottom of the Basic details page.
+
+In the next page, there are two options Manual and QR-Aadhaar using which the user can fill the customer details, and if the customer wants to use QR-Aadhaar option, the customer finger print is captured using the mantra device that must be connected 
+to tab, which sends the request to UIDAI server and fetches the personal details of customer against the Aadhaar no. entered, and the fetched details will be populated in a PDF form next to this page and also get pre filled against the basic input fields in the Basic details page.
+
+Basic Details Page:
+Customer basic details are captured manually in this page in case the customer has not opted for QR-Aadhaar option in the previous page.
+An SMS will be sent to customer's mobile number entered on clicking the Verify button, and the message will be a missed call alert which has a toll free number given in the message body
+to which the customer needs to give a missed call and verify the number he has provided in the application form.
+
+KYC Documents Page:
+
+This page is to capture the ID Proof and Address proof related information of customer and his joint applicants, joint applicants' kyc section will be
+enabled if the user clicks on the tick mark against the joint applicant type.
+
+There are basically ID Proof and Address Proof sections visible for all types of accounts, and there will be Age proof of minor,Form 60 Guardian,FATCA-CRS,Form 60 Minor sections also visible
+in case it is an younstar account.
+User has to tap on each section visible and select the document from the list of documents displayed, upon which there are a pre defined set of questions like Document name, Document number, Expiry Date get displayed on type of the document selected in 
+each section.
+And further there is a camera icon visible on the right of the section, where the user has to capture the respective image of the document selected in each section.
+User has to click on Save button against each section enabled and the particulars of KYC details of customer will be saved accordingly.
+
+Account Opening Page:
+
+This page is to capture the details other than the details captured in Basic and KYC page.
+There are a few basic details in this page also which get auto populated from the Basic Details page.
+In the TAX Document field, PAN and Form 60 options are available of which the user has to opt one.
+In case the PAN document is selected, FETCH PAN button will be enabled which uses the customer's PAN number entered just above the FETCH PAN button to connect to PAN Card server and 
+get the details of the customer.
+The name details of the customer entered in the Basic details page will be compared with the PAN card details fetched and there will be an error message displayed at the end of the 
+AOF if there is any mismatch between two details, and will not allow the user to proceed further unless the user modifies the name details in the basic details page.
+
+There are a few Communication address fields also in this page which are auto populated from the basic details page and there is one more section with the name Permanent
+address in which there is an option to select Address Same As Communication Address upon which the communication address details will be auto populated in the permanent address
+details also.
+User has to manually enter the permanent address details of customer in case the option Others is selected in Address Same As field.
+
+
+  
+
